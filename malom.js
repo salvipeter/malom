@@ -75,8 +75,15 @@ function loadImages() {
         "bselect" : "images/black-selected.png",
         "wselect" : "images/white-selected.png"
     };
+    var loaded = 0;
+    function imageLoaded() {
+        ++loaded;
+        if(loaded == Object.keys(sources).length)
+            init2();
+    }
     for(var img in sources) {
         images[img] = new Image();
+        images[img].onload = function() { imageLoaded(); };
         images[img].src = sources[img];
     }
 }
@@ -136,6 +143,10 @@ function init() {
         }
 
     loadImages();
+}
+
+function init2() {
+    // This is called automatically when all images have been loaded
     drawBoard();
     setupEvents();
 }
