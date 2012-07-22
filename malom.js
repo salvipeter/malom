@@ -1,6 +1,9 @@
 // Global variables
 var images = {};
 var position;
+var stones;
+var next_player;                // ("white"|"black")
+var next_action;                // ("put"|"take"|"move")
 var selected = [-1, -1];
 
 // Constants
@@ -66,6 +69,7 @@ function clearBoard() {
         [[false, false, false, false, false, false, false, false],
          [false, false, false, false, false, false, false, false],
          [false, false, false, false, false, false, false, false]];
+    stones = [9, 9];
 }
 
 function loadImages() {
@@ -109,6 +113,25 @@ function coordinates(event) {
     };
     return [x - board.offsetLeft, y - board.offsetTop];
 };
+
+function isInMill(pos) {
+    if(!position[pos[0]][pos[1]])
+        return false;
+    function check(list) {
+        return list.indexOf(pos[1]) >= 0 &&
+            position[pos[0]][list[0]] == position[pos[0]][list[1]] &&
+            position[pos[0]][list[0]] == position[pos[0]][list[2]];
+    }
+    if(check([0, 1, 2]) || check([5, 6, 7])) // Horizontal check
+        return true;
+    if(check([0, 3, 5]) || check([2, 4, 7])) // Vertical check
+        return true;
+    if([1, 3, 4, 6].indexOf(pos[1]) >= 0 &&  // Trans-loop check
+       position[0][pos[1]] == position[1][pos[1]] &&
+       position[0][pos[1]] == position[2][pos[1]])
+        return true;
+    return false;
+}
 
 function clickEvent(event) {
     var xy = coordinates(event);
