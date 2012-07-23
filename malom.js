@@ -170,17 +170,49 @@ function otherPlayer() {
     return next_player == "white" ? "black" : "white";
 }
 
+function allInMill(player) {
+    for(var loop = 0; loop < 3; ++loop)
+        for(var point = 0; point < 8; ++point) {
+            var p = [loop, point];
+            if(getStone(p) == player && !isInMill(p))
+                return false;
+        }
+    return true;
+}
+
 function isValidTake(p) {
-    return getStone(p) == otherPlayer() && !isInMill(p);
+    var other = otherPlayer();
+    return getStone(p) == other && (allInMill(other) || !isInMill(p));
 }
 
-function isValidPut(p) {
-    return !getStone(p);
+function validMoves() {
+    // Looks very expensive... there must be a better way to do this
+    var moves = [];
+    for(var loop = 0; loop < 3; ++loop)
+        for(var point = 0; point < 8; ++point) {
+            var p = [loop, point];
+            if(getStone(p) != next_player)
+                continue;
+            for(var loop2 = 0; loop2 < 3; ++loop2)
+                for(var point2 = 0; point2 < 8; ++point2) {
+                    var q = [loop2, point2];
+                    if(isValidMove(p, q))
+                        moves.push([p, q]);
+                }
+        }
+    return moves;
 }
 
-function hasWon() {
-    // The function assumes that the stores are already empty.
-    return stones[otherPlayer()]["board"] < 3;
+function hasLost() {
+    // The function assumes that the stores are already empty.    
+    return stones[next_player]["board"] < 3 || validMoves().length == 0;
+}
+
+function checkWin() {
+    if(hasLost()) {
+        alert("You have lost, " + next_player + "!");
+        clearBoard();
+    }
 }
 
 function clickEvent(event) {
@@ -189,15 +221,53 @@ function clickEvent(event) {
     if(!pos)
         return;
     var color = getStone(pos);
-    if(color == next_player)
-        selected = pos;
-    else if(!color) {
-        if(selected[0] >= 0 && isValidMove(selected, pos)) {
-            setStone(pos, next_player);
-            setStone(selected, false);
-            selected = [-1, -1];
-        } else
+    switch(next_action) {
+    case "move":
+        if(color == next_player)
+            selected = pos;
+        else if(!color) {
+            if(selected[0] >= 0 && isValidMove(selected, pos)) {
+                setStone(pos, next_player);
+                setStone(selected, false);
+                selected = [-1, -1];
+                if(isInMill(pos))
+                    next_action = "take";
+                else {
+                    next_player = otherPlayer();
+                    checkWin();
+                }
+            } else
+                return;
+        }
+        break;
+    case "put":
+        if(color)
             return;
+        setStone(pos, next_player);
+        stones[next_player]["store"]--;
+        stones[next_player]["board"]++;
+        if(isInMill(pos))
+            next_action = "take";
+        else {
+            next_player = otherPlayer();
+            if(stones[next_player]["store"] == 0) {
+                next_action = "move";
+                checkWin();
+            }
+        }
+        break;
+    case "take":
+        if(!isValidTake(pos))
+            return;
+        setStone(pos, false);
+        next_player = otherPlayer();
+        stones[next_player]["board"]--;
+        if(stones[next_player]["store"] == 0) {
+            next_action = "move";
+            checkWin();
+        } else
+            next_action = "put";
+        break;
     }
     drawBoard();
 }
@@ -209,19 +279,6 @@ function setupEvents() {
 
 function init() {
     clearBoard();
-
-    // Just for testing
-    for(var loop = 0; loop < 3; ++loop)
-        for(var point = 0; point < 8; ++point) {
-            switch(Math.round(Math.random() * 2)) {
-            case 0: continue;
-            case 1: position[loop][point] = "black"; stones["black"]["board"]++; break;
-            case 2: position[loop][point] = "white"; stones["white"]["board"]++; break;
-            }
-        }
-    stones["black"]["store"] = 0;
-    stones["white"]["store"] = 0;
-
     loadImages();
 }
 
