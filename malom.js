@@ -18,6 +18,7 @@ var coords = {
          [180,250],            [320,250],
          [180,320], [250,320], [320,320]]
 };
+var neighborhood = [[1, 3], [0, 2], [1, 4], [0, 5], [2, 7], [3, 6], [5, 7], [4, 6]];
 
 function circle(context, x, y) {
     context.beginPath();
@@ -35,6 +36,7 @@ function putStone(loop, point, color) {
 function drawBoard() {
     var board = document.getElementById("board");
     var c = board.getContext("2d");
+    c.clearRect(0, 0, board.width, board.height);
     c.lineWidth = 2;
     for(var i = 40; i < 500; i += 70) {
         if(i == 250)
@@ -69,7 +71,10 @@ function clearBoard() {
         [[false, false, false, false, false, false, false, false],
          [false, false, false, false, false, false, false, false],
          [false, false, false, false, false, false, false, false]];
-    stones = [9, 9];
+    stones = { "black" : { "store" : 9, "board" : 0 },
+               "white" : { "store" : 9, "board" : 0 } };
+    next_player = "white";
+    next_action = "put";
 }
 
 function loadImages() {
@@ -110,12 +115,20 @@ function coordinates(event) {
     if (!x && !y) {
         x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
         y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-    };
+    }
     return [x - board.offsetLeft, y - board.offsetTop];
-};
+}
+
+function getStone(pos) {
+    return position[pos[0]][pos[1]];
+}
+
+function setStone(pos, type) {
+    position[pos[0]][pos[1]] = type;
+}
 
 function isInMill(pos) {
-    if(!position[pos[0]][pos[1]])
+    if(!getStone(pos))
         return false;
     function check(list) {
         return list.indexOf(pos[1]) >= 0 &&
@@ -133,24 +146,65 @@ function isInMill(pos) {
     return false;
 }
 
+function areNeighbors(p, q) {
+    if(p[1] == q[1] && Math.abs(p[0] - q[0]) == 1 &&
+       [1, 3, 4, 6].indexOf(p[1]) >= 0)
+        return true;
+    if(p[0] != q[0])
+        return false;
+    if(neighborhood[p[1]][0] == q[1] || neighborhood[p[1]][1] == q[1])
+        return true;
+    return false;
+}
+
+function isValidMove(p, q) {
+    // The function assumes that the stores are already empty.
+    if(getStone(p) != next_player || getStone(q))
+        return false;
+    if(stones[next_player]["board"] > 3 && !areNeighbors(p, q))
+        return false;
+    return true;
+}
+
+function otherPlayer() {
+    return next_player == "white" ? "black" : "white";
+}
+
+function isValidTake(p) {
+    return getStone(p) == otherPlayer() && !isInMill(p);
+}
+
+function isValidPut(p) {
+    return !getStone(p);
+}
+
+function hasWon() {
+    // The function assumes that the stores are already empty.
+    return stones[otherPlayer()]["board"] < 3;
+}
+
 function clickEvent(event) {
     var xy = coordinates(event);
     var pos = findPoint(xy[0], xy[1], 17);
     if(!pos)
         return;
-    var color = position[pos[0]][pos[1]];
-    if(color)
+    var color = getStone(pos);
+    if(color == next_player)
         selected = pos;
+    else if(!color) {
+        if(selected[0] >= 0 && isValidMove(selected, pos)) {
+            setStone(pos, next_player);
+            setStone(selected, false);
+            selected = [-1, -1];
+        } else
+            return;
+    }
     drawBoard();
-}
-
-function moveEvent(event) {
 }
 
 function setupEvents() {
     var board = document.getElementById("board");
     board.addEventListener("click",     clickEvent, false);
-    board.addEventListener("mousemove", moveEvent,  false);
 }
 
 function init() {
@@ -159,11 +213,14 @@ function init() {
     // Just for testing
     for(var loop = 0; loop < 3; ++loop)
         for(var point = 0; point < 8; ++point) {
-            var r = Math.round(Math.random() * 2);
-            if(r == 2)
-                continue;
-            position[loop][point] = r == 1 ? "black" : "white";
+            switch(Math.round(Math.random() * 2)) {
+            case 0: continue;
+            case 1: position[loop][point] = "black"; stones["black"]["board"]++; break;
+            case 2: position[loop][point] = "white"; stones["white"]["board"]++; break;
+            }
         }
+    stones["black"]["store"] = 0;
+    stones["white"]["store"] = 0;
 
     loadImages();
 }
