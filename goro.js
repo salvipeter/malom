@@ -123,6 +123,11 @@ function clickEvent(event) {
     setCode(positionToCode());
 }
 
+function keyEvent(event) {
+    if(event.keyCode == 13)
+        load();
+}
+
 function setupEvents() {
     var board = document.getElementById("board");
     board.addEventListener("click", clickEvent, false);
@@ -172,7 +177,7 @@ function setCode(code) {
     document.getElementById("code").value = code;
 }
 
-function loadBoard(code) {
+function loadBoard(code, message) {
     if(code.length != 10)
         return;
     var bits = new Array(50);
@@ -202,12 +207,14 @@ function loadBoard(code) {
             else
                 position[i][j] = "white";
         }
+    drawBoard();
+    setCode(code);
+    document.getElementById("message").innerHTML = message;
 }
 
 function load() {
     var code = document.getElementById("code").value;
-    loadBoard(code);
-    drawBoard();
+    loadBoard(code, "&nbsp;");
 }
 
 function reset() {

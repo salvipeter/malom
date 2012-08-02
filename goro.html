@@ -11,13 +11,19 @@
       <h1>5x5 Go Problems</h1>
     </header>
     <div class="code">
-      Board #: <input type="text" id="code" />
+      Board #: <input type="text" id="code" onKeyPress="keyEvent(event)" />
       <input type="button" value="Load" onClick="load()" />
-      <input type="button" value="Reset" onClick="reset()" />
+      <input type="button" value="Clear" onClick="reset()" />
     </div>
     <noscript>This applet needs JavaScript.</noscript>
     <canvas id="board" width="210" height="210"> <!-- see board_size in goro.js -->
       This applet needs a browser with HTML5 support.
     </canvas>
+    <div class="instructions" id="message">&nbsp;</div>
+    <hr />
+    NHK Igo Kouza 2012/8:
+    <a href="#" onclick='loadBoard("514P29KL58", "Black to play.")'>1</a>
+    <a href="#" onclick='loadBoard("2KC9C9B148", "Black to play. Be careful of damezumari.")'>2</a>
+    <a href="#" onclick='loadBoard("0O3538302O", "Black to play. How can you evade oiotoshi?")'>3</a>
   </body>
 </html>

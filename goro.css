@@ -11,6 +11,11 @@ h1 {
     margin-bottom: 1em;
 }
 
+.instructions {
+    text-align: center;
+    margin-top: 1em;
+}
+
 canvas {
     background:url(images/wood.jpg);
     border: 2px solid black;
