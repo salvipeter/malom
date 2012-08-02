@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>5x5 Go Problems</title>
+    <link rel="stylesheet" href="goro.css" />
+    <script src="goro.js"></script>
+  </head>
+  <body onload="init();">
+    <header>
+      <h1>5x5 Go Problems</h1>
+    </header>
+    <div class="code">
+      Board #: <input type="text" id="code" />
+      <input type="button" value="Load" onClick="load()" />
+      <input type="button" value="Reset" onClick="reset()" />
+    </div>
+    <noscript>This applet needs JavaScript.</noscript>
+    <canvas id="board" width="210" height="210"> <!-- see board_size in goro.js -->
+      This applet needs a browser with HTML5 support.
+    </canvas>
+  </body>
+</html>
