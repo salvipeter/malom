@@ -149,27 +149,18 @@ function numToChar(n) {
 }
 
 function positionToCode() {
-    var bits = new Array(50);
-    for(var i = 0; i < 5; ++i)
-        for(var j = 0; j < 5; ++j) {
-            var k = (j * 5 + i) * 2;
-            var color = position[i][j];
-            if(color == "white")
-                bits[k] = 1;
-            else
-                bits[k] = 0;
-            if(color == "black")
-                bits[k+1] = 1;
-            else
-                bits[k+1] = 0;
-        }
     var code = "";
-    for(var i = 0, k = 0; i < 10; ++i) {
-        var n = 0;
-        for(var j = 0; j < 5; ++j)
-            n = n * 2 + bits[k++];
-        code += numToChar(n);
-    }
+    for(var type = 0; type <= 1; ++type)
+        for(var j = 0; j < 5; ++j) {
+            var n = 0;
+            for(var i = 0; i < 5; ++i) {
+                var color = position[i][j];
+                n *= 2;
+                if(color == (type ? "white" : "black"))
+                    ++n;
+            }
+            code += numToChar(n);
+        }
     return code;
 }
 
@@ -180,33 +171,33 @@ function setCode(code) {
 function loadBoard(code, message) {
     if(code.length != 10)
         return;
-    var bits = new Array(50);
-    for(var i = 0; i < 10; ++i) {
-        var n = charToNum(code[i]);
-        if(n < 0 || n > 31)
+    var black_rows = new Array(5);
+    var white_rows = new Array(5);
+    for(var i = 0; i < 5; ++i) {
+        black_rows[i] = charToNum(code[i]);
+        white_rows[i] = charToNum(code[i+5]);
+        if(black_rows[i] < 0 || black_rows[i] > 31)
             return;
-        var k = i * 5 + 4;
-        for(var j = 0; j < 5; ++j) {
-            bits[k--] = n % 2;
-            n = (n - n % 2) / 2;
+        if(white_rows[i] < 0 || white_rows[i] > 31)
+            return;
+        if((black_rows[i] & white_rows[i]) != 0)
+            return;
+    }
+    for(var j = 0; j < 5; ++j) {
+        var br = black_rows[j];
+        var wr = white_rows[j];
+        for(var i = 4; i >= 0; --i) {
+            if(br % 2) {
+                position[i][j] = "black";
+                --br;
+            } else if(wr % 2) {
+                position[i][j] = "white";
+                --wr;
+            } else
+                position[i][j] = false;
+            br /= 2; wr /= 2;
         }
     }
-    for(var i = 0; i < 5; ++i)
-        for(var j = 0; j < 5; ++j) {
-            var k = (j * 5 + i) * 2;
-            if(bits[k] == 1 && bits[k+1] == 1)
-                return;
-        }
-    for(var i = 0; i < 5; ++i)
-        for(var j = 0; j < 5; ++j) {
-            var k = (j * 5 + i) * 2;
-            if(bits[k] == 0 && bits[k+1] == 0)
-                position[i][j] = false;
-            else if(bits[k] == 0)
-                position[i][j] = "black";
-            else
-                position[i][j] = "white";
-        }
     drawBoard();
     setCode(code);
     document.getElementById("message").innerHTML = message;
