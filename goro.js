@@ -45,15 +45,6 @@ function drawBoard() {
         }
 }
 
-function clearBoard() {
-    position =
-        [[false, false, false, false, false],
-         [false, false, false, false, false],
-         [false, false, false, false, false],
-         [false, false, false, false, false],
-         [false, false, false, false, false]];
-}
-
 function loadImages() {
     var sources = {
         "black"   : "images/black.png",
@@ -209,19 +200,18 @@ function load() {
 }
 
 function reset() {
-    clearBoard();
-    drawBoard();
-    setCode("");
+    loadBoard("0000000000", "&nbsp;");
 }
 
 function init() {
-    clearBoard();
+    position = new Array(5);
+    for(var i = 0; i < 5; ++i)
+        position[i] = new Array(5);
     loadImages();
 }
 
 function init2() {
     // This is called automatically when all images have been loaded
-    drawBoard();
-    setCode("");
+    reset();
     setupEvents();
 }
