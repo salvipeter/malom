@@ -1,0 +1,29 @@
+body {
+    background-color: #aaffaa;
+}
+
+h1 {
+    text-align: center;
+}
+
+.code {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.showhide {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.cards {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 5px;
+}
+
+.table {
+    border-width: thin;
+    border-style: solid;
+}

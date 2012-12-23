@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bridge Deals</title>
+    <link rel="stylesheet" href="bridge.css" />
+    <script src="seedrandom.js"></script>
+    <script src="bridge.js"></script>
+  </head>
+  <body onload="init();">
+    <header>
+      <h1>Bridge Deals</h1>
+    </header>
+    <div class="code">
+      Deal #: <input type="text" id="code" onKeyPress="keyEvent(event)" />
+      <input type="button" value="Load" onClick="load()" />
+      <input type="button" value="Prev" onClick="prev()" />
+      <input type="button" value="Next" onClick="next()" />
+    </div>
+    <div class="showhide">
+      Player:
+      <input type="radio" value="north" name="player" onClick="showDeal()" />North
+      <input type="radio" value="south" name="player" onClick="showDeal()" />South
+      <input type="checkbox" id="partner" onClick="showDeal()" />Partner's hand
+      <input type="checkbox" id="others" onClick="showDeal()" />All hands
+    </div>
+    <center>
+      <table>
+        <tr>
+          <td>&nbsp;</td>
+          <td class="cards">
+            <div id="north">&nbsp;</div>
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td class="cards">
+            <div id="west">&nbsp;</div>
+          </td>
+          <td class="table">&nbsp;</td>
+          <td class="cards">
+            <div id="east">&nbsp;</div>
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td class="cards">
+            <div id="south">&nbsp;</div>
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+    </center>
+    <noscript>This applet needs JavaScript.</noscript>
+  </body>
+</html>
