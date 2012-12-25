@@ -1,6 +1,8 @@
 var players = ["N", "S", "W", "E"];
 var suits = ["♠", "<font color=\"red\">♥</font>", "<font color=\"red\">♦</font>", "♣"];
+var names = ["North", "East", "South", "West"];
 var cards = [];
+var dealer, vulnerability;
 
 function init() {
     invisible_hand = "";
@@ -39,6 +41,8 @@ function setupCards(code) {
     shuffle();
     shuffle();
     shuffle();
+    dealer = Math.floor(Math.random() * 4);
+    vulnerability = Math.floor(Math.random() * 4);
 }
 
 function getHand(player) {
@@ -82,6 +86,15 @@ function showDeal() {
         document.getElementById("west").innerHTML = invisible_hand;
         document.getElementById("east").innerHTML = invisible_hand;
     }
+    var names_str = "";
+    for(var i = 0; i < 4; ++i) {
+        var is_dealer = dealer == i;
+        var is_vulnerable = vulnerability & (1 << (i % 2));
+        names_str += "<span class=\"" +
+            (is_dealer ? "dealer " : "") + (is_vulnerable ? "vulnerable " : "") +
+            "\">" + names[i] + "</span>&nbsp;&nbsp;&nbsp;&nbsp;"
+    }
+    document.getElementById("names").innerHTML = names_str;
 }
 
 function load() {
@@ -101,4 +114,9 @@ function next() {
     var code = parseInt(document.getElementById("code").value);
     code += 1;
     loadDeal(code);
+}
+
+function keyEvent(event) {
+    if(event.keyCode == 13)
+        load();
 }
