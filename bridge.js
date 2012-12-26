@@ -1,4 +1,4 @@
-var players = ["N", "S", "W", "E"];
+var players = ["N", "E", "S", "W"];
 var suits = ["♠", "<font color=\"red\">♥</font>", "<font color=\"red\">♦</font>", "♣"];
 var names = ["North", "East", "South", "West"];
 var cards = [];
@@ -7,11 +7,11 @@ var dealer, vulnerability;
 function init() {
     invisible_hand = "";
     for(var i = 0; i < 4; ++i) {
-        for(var j = 0; j < 15; ++j)
+        for(var j = 0; j < 16; ++j)
             invisible_hand += "&nbsp;";
         invisible_hand += "<br />";
     }
-    document.getElementsByName("player")[1].checked = true;
+    document.getElementsByName("player")[2].checked = true;
     loadDeal(1);
 }
 
@@ -71,21 +71,23 @@ function getHand(player) {
 
 function showDeal() {
     var player_north = document.getElementsByName("player")[0].checked;
+    var player_east = document.getElementsByName("player")[1].checked;
+    var player_south = document.getElementsByName("player")[2].checked;
+    var player_west = document.getElementsByName("player")[3].checked;
     var show_partner = document.getElementById("partner").checked;
     var show_others = document.getElementById("others").checked;
-    if(player_north || show_partner || show_others)
+    if(player_north || player_south && show_partner || show_others)
         document.getElementById("north").innerHTML = getHand("N");
     else document.getElementById("north").innerHTML = invisible_hand;
-    if(!player_north || show_partner || show_others)
+    if(player_east || player_west && show_partner || show_others)
+        document.getElementById("east").innerHTML = getHand("E");
+    else document.getElementById("east").innerHTML = invisible_hand;
+    if(player_south || player_north && show_partner || show_others)
         document.getElementById("south").innerHTML = getHand("S");
     else document.getElementById("south").innerHTML = invisible_hand;
-    if(show_others) {
+    if(player_west || player_east && show_partner || show_others)
         document.getElementById("west").innerHTML = getHand("W");
-        document.getElementById("east").innerHTML = getHand("E");
-    } else {
-        document.getElementById("west").innerHTML = invisible_hand;
-        document.getElementById("east").innerHTML = invisible_hand;
-    }
+    else document.getElementById("west").innerHTML = invisible_hand;
     var names_str = "";
     for(var i = 0; i < 4; ++i) {
         var is_dealer = dealer == i;
