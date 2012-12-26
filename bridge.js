@@ -7,7 +7,7 @@ var dealer, vulnerability;
 function init() {
     invisible_hand = "";
     for(var i = 0; i < 4; ++i) {
-        for(var j = 0; j < 16; ++j)
+        for(var j = 0; j < 17; ++j)
             invisible_hand += "&nbsp;";
         invisible_hand += "<br />";
     }
@@ -48,8 +48,18 @@ function setupCards(code) {
 function getHand(player) {
     var code = document.getElementById("code").value;
     var hand = "";
+    var max_length = 13;
+    if(player == "W") {
+        var length = [0, 0, 0, 0];
+        for(var i = 0; i < 52; ++i)
+            if(cards[i] == "W")
+                ++length[Math.floor(i / 13)];
+        max_length = Math.max(Math.max(Math.max(length[0], length[1]), length[2]), length[3]);
+    }
     for(var i = 0; i < 4; ++i) {
-        hand += "&nbsp;" + suits[i] + " ";
+        for(var j = 0; j < 14 - max_length; ++j)
+            hand += "&nbsp;";
+        hand += suits[i] + " ";
         var empty = 0;
         for(var j = 0; j < 13; ++j)
             if(cards[i * 13 + j] == player)
@@ -62,7 +72,7 @@ function getHand(player) {
                 default: hand += 14 - j;
                 }
             else ++empty;
-        for(var j = 0; j < empty; ++j)
+        for(var j = 0; j < max_length - 12 + empty; ++j)
             hand += "&nbsp;";
         hand += "<br />";
     }
