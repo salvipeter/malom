@@ -66,7 +66,7 @@ function getHand(player) {
                 switch(j) {
                 case 0: hand += "A"; break;
                 case 1: hand += "K"; break;
-                case 2: hand += "D"; break;
+                case 2: hand += "Q"; break;
                 case 3: hand += "J"; break;
                 case 4: hand += "T"; break;
                 default: hand += 14 - j;
