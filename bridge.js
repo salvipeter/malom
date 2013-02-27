@@ -110,7 +110,7 @@ function showDeal() {
 }
 
 function load() {
-    var code = document.getElementById("code").value;
+    var code = parseInt(document.getElementById("code").value);
     loadDeal(code);
 }
 
